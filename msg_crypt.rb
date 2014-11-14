@@ -100,6 +100,7 @@ module Wecheat
       decode_cipher = OpenSSL::Cipher::Cipher.new(alg)
       decode_cipher.decrypt
       decode_cipher.key = key
+      decode_cipher.padding = 0
       decode_cipher.iv  = key[0..15]
       plain = decode_cipher.update(text64)
       plain << decode_cipher.final

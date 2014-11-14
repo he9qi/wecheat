@@ -85,5 +85,5 @@ module Wecheat::Models
       self[name].select{|o| o[key].to_s == value.to_s }.first
     end
   end
-  
+
 end

@@ -5,6 +5,7 @@ require 'erb'
 
 require './models'
 require './helpers'
+require './msg_crypt'
 
 class WecheatApp < Sinatra::Base
 
@@ -13,7 +14,7 @@ class WecheatApp < Sinatra::Base
   end
 
   before do
-    request.body.set_encoding('utf-8')
+    # request.body.set_encoding('utf-8')
   end
 
   helpers Wecheat::FormHelpers

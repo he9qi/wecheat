@@ -19,7 +19,9 @@ describe Wecheat::MsgCrypt do
   describe "#encrypt" do
     it "generate xml with encrypt" do
       expect(SecureRandom).to receive(:hex).with(8).and_return("HLFOQjbkfgUh46s8")
-      expect(msg_crypt.encrypt message, nonce, timestamp).to eq(encrypted_message)
+      sig, msg = *msg_crypt.encrypt(message, nonce, timestamp)
+      expect(sig).to eq(signature)
+      expect(msg).to eq(encrypted_message)
     end
   end
 

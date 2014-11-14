@@ -27,7 +27,7 @@ class WecheatApp
   #update app
   put '/apps/:id' do
     unless params[:app].nil?
-      [:token, :url, :label].each do |attr|
+      [:token, :url, :label, :encoding_key].each do |attr|
         @app[attr] = params[:app][attr] unless params[:app][attr].nil?
       end
       @app.save
@@ -87,13 +87,13 @@ class WecheatApp
 
     timestamp      = Time.now.to_i
     nonce          = Wecheat::Utils.rand_secret
-    msg_crypt      = Wecheat::MsgCrypt.new "wx9r0yxnbprwdveayi", @app.token, "tpSFMdwOQwfGPYkwbBED0Orand6r4l2viWVtMVvHZdV"
-    encrypted_data = msg_crypt.encrypt data, nonce, timestamp.to_s
-    params         = { timestamp: timestamp, nonce: nonce }
+    msg_crypt      = Wecheat::MsgCrypt.new @app.id, @app.token, @app.encoding_key
+    sig, msg       = *msg_crypt.encrypt(data, nonce, timestamp.to_s)
+    params         = { timestamp: timestamp, nonce: nonce, msg_signature: sig }
     base_url       = @app.base_url params
 
     begin
-      res = RestClient.post(base_url, encrypted_data, content_type: 'text/xml; charset=utf-8')
+      res = RestClient.post(base_url, msg, content_type: 'text/xml; charset=utf-8')
       # res = RestClient.post(@app.base_url, data, content_type: 'text/xml; charset=utf-8')
       res.force_encoding('utf-8') unless res.encoding.name == 'UTF-8'
       json error: false, response: res

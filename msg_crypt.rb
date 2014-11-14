@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require "openssl"
 require 'digest/sha2'
 require 'base64'
@@ -51,7 +53,9 @@ module Wecheat
     end
 
     def encrypt_message(text)
-      text   = SecureRandom.hex(8) + [Wecheat::Socket.htonl(text.length)].pack("I") + text + appid
+      text   = text.force_encoding("ASCII-8BIT")
+      pack   = [Wecheat::Socket.htonl(text.length)].pack("I")
+      text   = SecureRandom.hex(8) + pack + text + appid
 
       # setup the cipher
       aes = OpenSSL::Cipher::Cipher.new(alg)
@@ -77,7 +81,7 @@ module Wecheat
       enc = encrypt_message message
       sig = gen_signature timestamp, nonce, enc
 
-      Wecheat::XML.gen enc, sig, timestamp, nonce
+      [sig, Wecheat::XML.gen(enc, sig, timestamp, nonce)]
     end
 
     def get_encrypted_text(message, signature, nonce, timestamp)

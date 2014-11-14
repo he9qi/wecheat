@@ -9,6 +9,7 @@ module Wecheat::Models
     property :access_token, required: true
     property :label
     property :token, default: ''
+    property :encoding_key, default: ''
     property :url,  default: ''
     property :users, default: []
     property :medias, default: []
